@@ -74,16 +74,25 @@ a{color:inherit;}
 .topbar{
   position:fixed;top:0;left:0;right:0;z-index:55;
   display:flex;align-items:center;justify-content:space-between;
-  padding:20px clamp(20px,4.5vw,74px);
+  padding:18px clamp(20px,4.5vw,74px);
   pointer-events:none;
 }
 .brand{display:flex;align-items:center;gap:12px;}
 .brand-chip{
-  display:inline-grid;place-items:center;
-  background:#fff;border-radius:11px;padding:5px 9px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#fff;border-radius:10px;padding:4px 8px;
   box-shadow:0 10px 26px -12px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.14);
+  height:34px;
+  min-width:56px;
+  overflow:hidden;
 }
-.brand-chip img{height:22px;width:auto;display:block;}
+.brand-chip img{
+  height:100%;
+  width:auto;
+  max-width:120px;
+  object-fit:contain;
+  display:block;
+}
 .brand-name{
   font-family:'Outfit',sans-serif;font-weight:500;font-size:.92rem;
   letter-spacing:.02em;color:rgba(234,242,255,.82);
@@ -240,7 +249,6 @@ a{color:inherit;}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
 }
 .ico.sm{width:38px;height:38px;border-radius:11px;font-size:.88rem;margin-bottom:12px;}
-.ico.green{background:linear-gradient(140deg,rgba(37,211,102,.24),rgba(18,140,126,.14));border-color:rgba(37,211,102,.35);color:#86efac;}
 
 .link{
   display:inline-flex;align-items:center;gap:7px;
@@ -269,14 +277,30 @@ a{color:inherit;}
 .cover-ring.two{width:min(120vh,120vw);height:min(120vh,120vw);margin:-60vh 0 0 -60vh;border-color:rgba(99,102,241,.08);animation-duration:70s;animation-direction:reverse;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
+/* ---- LOGO HERO (FIXED — square container, no clipping) ---- */
 .logo-hero{
-  width:clamp(150px,17vw,206px);height:clamp(88px,10vw,118px);
-  border-radius:26px;background:#fff;
-  display:grid;place-items:center;padding:16px;margin-bottom:32px;
+  width:clamp(180px,22vw,260px);
+  aspect-ratio:1 / 1;
+  border-radius:28px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  margin-bottom:32px;
   box-shadow:0 40px 90px -40px rgba(34,211,238,.85),0 0 0 1px rgba(255,255,255,.18);
-  position:relative;z-index:2;
+  position:relative;
+  z-index:2;
+  overflow:hidden;
 }
-.logo-hero img{max-width:86%;max-height:78%;object-fit:contain;}
+.logo-hero img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  display:block;
+}
+
 .cover .h1{max-width:16ch;}
 .cover .lead{max-width:60ch;margin-inline:auto;}
 .cover .chip-row{justify-content:center;margin-top:34px;}
@@ -451,10 +475,12 @@ a{color:inherit;}
   color:var(--ink);font-family:inherit;font-size:.88rem;
   outline:none;transition:.35s var(--ease);resize:none;
 }
-.field select{appearance:none;cursor:pointer;
+.field select{
+  appearance:none;cursor:pointer;
   background-image:linear-gradient(45deg,transparent 50%,#67e8f9 50%),linear-gradient(135deg,#67e8f9 50%,transparent 50%);
   background-position:calc(100% - 20px) center,calc(100% - 15px) center;
   background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+  padding-right:44px;
 }
 .field select option{background:#0b1220;color:var(--ink);}
 .field input::placeholder,.field textarea::placeholder{color:rgba(142,163,192,.72);}
@@ -551,13 +577,23 @@ a{color:inherit;}
   .h2{font-size:1.5rem;}
   .scroll-hint{display:none;}
   .wa-float{bottom:auto;top:80px;left:16px;width:46px;height:46px;font-size:1.2rem;}
+
+  /* ---- MOBILE LOGO FIXES ---- */
+  .logo-hero{
+    width:clamp(150px,52vw,200px);
+    padding:18px;
+    margin-bottom:24px;
+    border-radius:22px;
+  }
+  .brand-chip{height:30px;padding:3px 7px;border-radius:9px;}
+  .brand-chip img{max-width:90px;}
 }
 @media (max-height:720px) and (min-width:761px){
   .slide{padding:80px clamp(24px,5vw,96px) 74px;}
   .s-head{margin-bottom:20px;}
   .card{padding:18px;}
   .ico{width:38px;height:38px;font-size:.9rem;margin-bottom:11px;}
-  .logo-hero{width:130px;height:78px;margin-bottom:22px;}
+  .logo-hero{width:150px;margin-bottom:22px;padding:16px;}
 }
 </style>
 </head>
@@ -615,7 +651,7 @@ a{color:inherit;}
     <div class="wrap">
       <div class="logo-hero reveal" style="--d:.05s">
         <img src="https://v5thermosystems.com/media/site/images/logo-2.png" alt="V5 Thermosystems"
-             onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em\'>V5 THERMOSYSTEMS</b>'">
+             onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;text-align:center;line-height:1.1\'>V5<br>THERMOSYSTEMS</b>'">
       </div>
       <p class="eyebrow reveal" style="--d:.14s">HVAC &amp; Refrigeration Solutions</p>
       <h1 class="h1 reveal" style="--d:.22s">V5 <span class="grad">Thermosystems</span></h1>
@@ -660,7 +696,7 @@ a{color:inherit;}
 
         <div class="glass-panel reveal" style="--d:.28s">
           <div class="panel-top">
-            <span class="brand-chip" style="padding:7px 12px;">
+            <span class="brand-chip" style="height:44px;padding:5px 10px;">
               <img src="https://v5thermosystems.com/media/site/images/logo-2.png" alt="V5"
                    onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800\'>V5</b>'">
             </span>
@@ -1239,13 +1275,12 @@ a{color:inherit;}
   </section>
 
   <!-- ============ 16 · CLOSING ============ -->
-  <!-- NOTE: 16th section kept as decorative closing after 15 numbered slides -->
   <section class="slide closing">
     <div class="cover-ring"></div>
     <div class="wrap">
       <div class="logo-hero reveal" style="--d:.05s">
         <img src="https://v5thermosystems.com/media/site/images/logo-2.png" alt="V5 Thermosystems"
-             onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800;font-size:22px\'>V5 THERMOSYSTEMS</b>'">
+             onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800;font-size:20px;text-align:center;line-height:1.1\'>V5<br>THERMOSYSTEMS</b>'">
       </div>
       <p class="eyebrow reveal" style="--d:.14s">Thank You</p>
       <h1 class="h1 reveal" style="--d:.22s">Reliable HVAC &amp; <span class="grad">Refrigeration Solutions</span></h1>
@@ -1305,7 +1340,6 @@ a{color:inherit;}
     curEl.textContent = String(index + 1).padStart(2, '0');
     bar.style.width = ((index + 1) / total * 100) + '%';
 
-    /* close FAQ when leaving the FAQ slide */
     if (index !== 13) {
       document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
     }
@@ -1336,7 +1370,6 @@ a{color:inherit;}
   });
 
   document.addEventListener('keydown', e => {
-    /* don't hijack typing in form fields */
     const tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
 
@@ -1353,7 +1386,6 @@ a{color:inherit;}
 
   deck.addEventListener('wheel', e => {
     if (window.innerWidth < 761) return;
-    /* let users scroll inside the form area */
     if (e.target.closest('.form-card')) return;
     e.preventDefault();
     if (locked) return;
@@ -1364,7 +1396,6 @@ a{color:inherit;}
     else if (e.deltaY < -24) prev();
   }, { passive: false });
 
-  /* -------- touch swipe -------- */
   let tStartX = 0, tStartY = 0;
   deck.addEventListener('touchstart', e => {
     tStartX = e.changedTouches[0].clientX;
@@ -1393,7 +1424,7 @@ a{color:inherit;}
   /* ============================================================
      WHATSAPP ENQUIRY FORM
      ============================================================ */
-  const WA_NUMBER = '917219003440'; // country code + number, no +, no spaces
+  const WA_NUMBER = '917219003440';
 
   const waForm    = document.getElementById('waForm');
   const waSubmit  = document.getElementById('waSubmit');
@@ -1436,7 +1467,6 @@ a{color:inherit;}
     const service = serviceEl.value;
     const message = msgEl.value.trim();
 
-    /* --- validation --- */
     if (name.length < 2)
       return fieldError(nameEl, 'Please enter your name.');
     if (phone.replace(/\D/g, '').length < 10)
@@ -1446,7 +1476,6 @@ a{color:inherit;}
     if (message.length < 5)
       return fieldError(msgEl, 'Please describe your requirement.');
 
-    /* --- build WhatsApp message --- */
     const lines = [
       '*New Enquiry — V5 Thermosystems*',
       '',
@@ -1460,18 +1489,15 @@ a{color:inherit;}
     const text = encodeURIComponent(lines.join('\n'));
     const url  = `https://wa.me/${WA_NUMBER}?text=${text}`;
 
-    /* --- UX feedback --- */
     waSubmit.disabled  = true;
     waSubmit.innerHTML = 'Opening WhatsApp… <i class="fa-solid fa-spinner fa-spin"></i>';
     showToast('Opening WhatsApp…');
 
-    /* --- open WhatsApp --- */
     const win = window.open(url, '_blank', 'noopener,noreferrer');
     if (!win || win.closed || typeof win.closed === 'undefined') {
       window.location.href = url;
     }
 
-    /* --- reset --- */
     setTimeout(() => {
       waSubmit.disabled  = false;
       waSubmit.innerHTML = waBtnHTML;
