@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V5 Thermosystems — Company Profile</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#04070d;
+  --ink:#eaf2ff;
+  --muted:#8ea3c0;
+  --cyan:#22d3ee;
+  --blue:#3b82f6;
+  --violet:#8b5cf6;
+  --green:#25d366;
+  --green-dark:#128c7e;
+  --glass:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.018));
+  --stroke:rgba(255,255,255,.09);
+  --radius:20px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;}
+::selection{background:rgba(34,211,238,.35);}
+a{color:inherit;}
+
+/* ============ BACKGROUND ============ */
+.fx{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.grid-lines{
+  position:absolute;inset:-2px;
+  background-image:
+    linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.032) 1px,transparent 1px);
+  background-size:66px 66px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 42%,#000 18%,transparent 76%);
+  mask-image:radial-gradient(ellipse at 50% 42%,#000 18%,transparent 76%);
+}
+.orb{position:absolute;border-radius:50%;filter:blur(95px);will-change:transform;}
+.orb-a{width:54vw;height:54vw;background:radial-gradient(circle,#0ea5e9,transparent 66%);top:-20vw;left:-14vw;opacity:.42;animation:drift1 20s ease-in-out infinite;}
+.orb-b{width:46vw;height:46vw;background:radial-gradient(circle,#6366f1,transparent 66%);bottom:-20vw;right:-12vw;opacity:.4;animation:drift2 24s ease-in-out infinite;}
+.orb-c{width:36vw;height:36vw;background:radial-gradient(circle,#06b6d4,transparent 66%);top:34%;left:46%;opacity:.22;animation:drift3 28s ease-in-out infinite;}
+.vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 42%,rgba(2,4,9,.72) 100%);}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(6vw,5vw) scale(1.12);}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-7vw,-4vw) scale(1.1);}}
+@keyframes drift3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-5vw,7vw) scale(1.18);}}
+
+/* ============ CHROME ============ */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:60;}
+.progress .bar{
+  height:100%;width:7%;
+  background:linear-gradient(90deg,var(--cyan),var(--blue) 55%,var(--violet));
+  box-shadow:0 0 18px rgba(34,211,238,.75);
+  transition:width .6s var(--ease);
+  border-radius:0 3px 3px 0;
+}
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:55;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px clamp(20px,4.5vw,74px);
+  pointer-events:none;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-chip{
+  display:inline-grid;place-items:center;
+  background:#fff;border-radius:11px;padding:5px 9px;
+  box-shadow:0 10px 26px -12px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.14);
+}
+.brand-chip img{height:22px;width:auto;display:block;}
+.brand-name{
+  font-family:'Outfit',sans-serif;font-weight:500;font-size:.92rem;
+  letter-spacing:.02em;color:rgba(234,242,255,.82);
+}
+.brand-name b{font-weight:700;color:#fff;}
+.counter{
+  font-family:'Outfit',sans-serif;font-size:.85rem;letter-spacing:.16em;
+  color:rgba(234,242,255,.45);
+  display:flex;align-items:baseline;gap:5px;
+}
+.counter #cur{color:#fff;font-weight:700;font-size:1rem;}
+.counter i{font-style:normal;opacity:.4;}
+
+.dots{
+  position:fixed;right:clamp(14px,2.2vw,30px);top:50%;transform:translateY(-50%);
+  z-index:56;display:flex;flex-direction:column;gap:9px;
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;border:0;padding:0;cursor:pointer;
+  background:rgba(255,255,255,.2);transition:.4s var(--ease);position:relative;
+}
+.dot:hover{background:rgba(255,255,255,.45);transform:scale(1.25);}
+.dot.on{
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  box-shadow:0 0 0 4px rgba(34,211,238,.14),0 0 14px rgba(34,211,238,.7);
+  transform:scale(1.35);
+}
+
+.controls{
+  position:fixed;bottom:clamp(16px,3vh,30px);right:clamp(20px,4.5vw,74px);
+  z-index:56;display:flex;gap:10px;align-items:center;
+}
+.btn{
+  width:46px;height:46px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--stroke);
+  color:var(--ink);font-size:.9rem;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:.35s var(--ease);
+}
+.btn:hover{
+  background:linear-gradient(135deg,rgba(34,211,238,.22),rgba(59,130,246,.18));
+  border-color:rgba(34,211,238,.55);
+  box-shadow:0 12px 34px -14px rgba(34,211,238,.8);
+  transform:translateY(-2px);
+}
+.btn:active{transform:scale(.94);}
+
+/* ============ DECK ============ */
+.deck{position:fixed;inset:0;z-index:2;}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:92px clamp(24px,5vw,96px) 92px;
+  opacity:0;visibility:hidden;
+  transform:translate3d(0,42px,0) scale(.985);
+  transition:opacity .65s ease,transform .85s var(--ease),visibility .85s;
+}
+.slide.active{opacity:1;visibility:visible;transform:none;}
+.wrap{width:100%;max-width:1240px;margin:0 auto;}
+
+.reveal{
+  opacity:0;transform:translateY(26px);
+  transition:opacity .7s ease,transform .85s var(--ease);
+  transition-delay:var(--d,0s);
+}
+.slide.active .reveal{opacity:1;transform:none;}
+.slide:not(.active) .reveal{transition-delay:0s;transition-duration:.25s;}
+
+/* ============ TYPOGRAPHY ============ */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:11px;
+  font-family:'Outfit',sans-serif;font-size:.72rem;font-weight:600;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:#7dd3fc;margin:0 0 16px;
+}
+.eyebrow::before{
+  content:"";width:34px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan));
+}
+.h1{
+  font-family:'Outfit',sans-serif;font-weight:800;
+  font-size:clamp(2.5rem,5.6vw,4.9rem);
+  line-height:1.02;letter-spacing:-.03em;margin:0 0 20px;
+}
+.h2{
+  font-family:'Outfit',sans-serif;font-weight:700;
+  font-size:clamp(1.65rem,3.2vw,2.85rem);
+  line-height:1.12;letter-spacing:-.025em;margin:0 0 14px;
+}
+.h3{
+  font-family:'Outfit',sans-serif;font-weight:600;
+  font-size:clamp(1rem,1.25vw,1.15rem);
+  line-height:1.3;margin:0 0 7px;letter-spacing:-.01em;
+}
+.grad{
+  background:linear-gradient(115deg,#67e8f9 0%,#38bdf8 40%,#818cf8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lead{
+  font-size:clamp(.92rem,1.08vw,1.08rem);
+  line-height:1.72;color:var(--muted);margin:0;max-width:62ch;font-weight:300;
+}
+.small{font-size:.83rem;line-height:1.6;color:var(--muted);font-weight:300;}
+
+/* ============ COMPONENTS ============ */
+.chip-row{display:flex;flex-wrap:wrap;gap:10px;}
+.chip{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:9px 16px;border-radius:100px;
+  background:rgba(255,255,255,.045);
+  border:1px solid var(--stroke);
+  font-size:.8rem;color:rgba(234,242,255,.86);font-weight:400;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:.35s var(--ease);text-decoration:none;
+}
+.chip:hover{border-color:rgba(34,211,238,.45);background:rgba(34,211,238,.08);}
+.chip i{color:#67e8f9;font-size:.82rem;}
+
+.card{
+  position:relative;overflow:hidden;
+  background:var(--glass);
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  padding:24px;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  transition:transform .5s var(--ease),border-color .5s,box-shadow .5s;
+}
+.card::after{
+  content:"";position:absolute;top:0;left:-120%;width:70%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.09),transparent);
+  transform:skewX(-18deg);transition:left .85s var(--ease);pointer-events:none;
+}
+.card:hover::after{left:150%;}
+.card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(34,211,238,.42);
+  box-shadow:0 30px 64px -30px rgba(34,211,238,.55);
+}
+.card-glow{
+  position:absolute;top:-60px;right:-60px;width:150px;height:150px;
+  background:radial-gradient(circle,rgba(34,211,238,.28),transparent 68%);
+  opacity:0;transition:opacity .5s;pointer-events:none;
+}
+.card:hover .card-glow{opacity:1;}
+
+.ico{
+  width:46px;height:46px;border-radius:14px;flex:0 0 auto;
+  display:grid;place-items:center;font-size:1.05rem;
+  background:linear-gradient(140deg,rgba(34,211,238,.2),rgba(59,130,246,.12));
+  border:1px solid rgba(34,211,238,.26);
+  color:#7dd3fc;margin-bottom:16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+}
+.ico.sm{width:38px;height:38px;border-radius:11px;font-size:.88rem;margin-bottom:12px;}
+.ico.green{background:linear-gradient(140deg,rgba(37,211,102,.24),rgba(18,140,126,.14));border-color:rgba(37,211,102,.35);color:#86efac;}
+
+.link{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:#67e8f9;text-decoration:none;transition:.35s var(--ease);
+}
+.link i{transition:transform .35s var(--ease);font-size:.7rem;}
+.link:hover{color:#a5f3fc;}
+.link:hover i{transform:translateX(5px);}
+
+/* ============ COVER ============ */
+.cover{align-items:center;text-align:center;}
+.cover .wrap{display:flex;flex-direction:column;align-items:center;}
+.cover-ring{
+  position:absolute;top:50%;left:50%;
+  width:min(88vh,88vw);height:min(88vh,88vw);
+  margin:-44vh 0 0 -44vh;border-radius:50%;
+  border:1px solid rgba(34,211,238,.11);
+  box-shadow:0 0 120px -30px rgba(34,211,238,.35) inset;
+  pointer-events:none;animation:spin 42s linear infinite;
+}
+.cover-ring::before{
+  content:"";position:absolute;top:-4px;left:50%;width:7px;height:7px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 18px 4px rgba(34,211,238,.9);margin-left:-3px;
+}
+.cover-ring.two{width:min(120vh,120vw);height:min(120vh,120vw);margin:-60vh 0 0 -60vh;border-color:rgba(99,102,241,.08);animation-duration:70s;animation-direction:reverse;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.logo-hero{
+  width:clamp(150px,17vw,206px);height:clamp(88px,10vw,118px);
+  border-radius:26px;background:#fff;
+  display:grid;place-items:center;padding:16px;margin-bottom:32px;
+  box-shadow:0 40px 90px -40px rgba(34,211,238,.85),0 0 0 1px rgba(255,255,255,.18);
+  position:relative;z-index:2;
+}
+.logo-hero img{max-width:86%;max-height:78%;object-fit:contain;}
+.cover .h1{max-width:16ch;}
+.cover .lead{max-width:60ch;margin-inline:auto;}
+.cover .chip-row{justify-content:center;margin-top:34px;}
+
+.scroll-hint{
+  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+  font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(234,242,255,.32);display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.scroll-hint span{
+  width:1px;height:34px;
+  background:linear-gradient(180deg,rgba(34,211,238,.9),transparent);
+  animation:pulseDown 2.2s ease-in-out infinite;
+}
+@keyframes pulseDown{0%,100%{opacity:.25;transform:scaleY(.6);}50%{opacity:1;transform:scaleY(1);}}
+
+/* ============ LAYOUTS ============ */
+.s-head{margin-bottom:clamp(22px,3.4vh,42px);}
+.col-2{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,4vw,64px);align-items:center;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+
+.glass-panel{
+  background:var(--glass);border:1px solid var(--stroke);
+  border-radius:24px;padding:26px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  position:relative;overflow:hidden;
+}
+.glass-panel::before{
+  content:"";position:absolute;top:-90px;right:-90px;width:230px;height:230px;
+  background:radial-gradient(circle,rgba(34,211,238,.24),transparent 70%);
+}
+.panel-top{display:flex;align-items:center;gap:14px;margin-bottom:24px;position:relative;}
+.panel-top h4{font-family:'Outfit',sans-serif;font-size:1rem;margin:0 0 3px;font-weight:600;}
+.panel-top p{margin:0;font-size:.76rem;color:var(--muted);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;position:relative;}
+.stat{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:16px;
+  transition:.4s var(--ease);
+}
+.stat:hover{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.3);}
+.stat b{
+  display:block;font-family:'Outfit',sans-serif;font-weight:700;
+  font-size:1.5rem;line-height:1;
+  background:linear-gradient(120deg,#67e8f9,#818cf8);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:7px;
+}
+.stat span{font-size:.74rem;color:var(--muted);letter-spacing:.02em;}
+
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:13px;}
+.checks li{
+  display:flex;gap:14px;align-items:flex-start;
+  font-size:.9rem;line-height:1.55;color:rgba(234,242,255,.88);font-weight:300;
+}
+.checks li i{
+  flex:0 0 auto;margin-top:2px;
+  width:22px;height:22px;border-radius:7px;
+  display:grid;place-items:center;font-size:.62rem;
+  background:linear-gradient(140deg,rgba(34,211,238,.24),rgba(59,130,246,.14));
+  border:1px solid rgba(34,211,238,.3);color:#7dd3fc;
+}
+
+.feature{
+  border-radius:24px;padding:30px;position:relative;overflow:hidden;
+  background:linear-gradient(150deg,rgba(34,211,238,.14),rgba(99,102,241,.07) 55%,rgba(255,255,255,.02));
+  border:1px solid rgba(34,211,238,.22);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.feature .quote{
+  font-family:'Outfit',sans-serif;font-size:clamp(1.1rem,1.7vw,1.5rem);
+  font-weight:400;line-height:1.5;margin:0 0 18px;letter-spacing:-.015em;
+}
+.feature .quote b{font-weight:700;color:#a5f3fc;}
+
+.sector{
+  position:relative;overflow:hidden;border-radius:22px;padding:28px;
+  background:var(--glass);border:1px solid var(--stroke);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  transition:.5s var(--ease);
+}
+.sector::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet));
+  opacity:.85;
+}
+.sector:hover{transform:translateY(-7px);border-color:rgba(34,211,238,.4);box-shadow:0 34px 70px -34px rgba(34,211,238,.6);}
+.sector .num{
+  position:absolute;top:16px;right:20px;
+  font-family:'Outfit',sans-serif;font-weight:800;font-size:3.2rem;
+  line-height:1;color:rgba(255,255,255,.045);letter-spacing:-.05em;
+}
+.tag-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px;}
+.tag{
+  font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;font-weight:500;
+  padding:5px 11px;border-radius:100px;
+  background:rgba(34,211,238,.09);border:1px solid rgba(34,211,238,.2);
+  color:#a5f3fc;
+}
+
+.faq{display:grid;gap:10px;}
+.faq-item{
+  border:1px solid var(--stroke);border-radius:16px;
+  background:rgba(255,255,255,.03);
+  overflow:hidden;transition:.45s var(--ease);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.faq-item:hover{border-color:rgba(34,211,238,.32);}
+.faq-item.open{
+  border-color:rgba(34,211,238,.5);
+  background:linear-gradient(140deg,rgba(34,211,238,.09),rgba(255,255,255,.025));
+  box-shadow:0 22px 50px -30px rgba(34,211,238,.8);
+}
+.faq-q{
+  width:100%;background:none;border:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:17px 20px;text-align:left;color:var(--ink);
+  font-family:'Outfit',sans-serif;font-size:.94rem;font-weight:500;letter-spacing:-.005em;
+}
+.faq-q i{
+  flex:0 0 auto;width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;font-size:.66rem;
+  background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.28);
+  color:#7dd3fc;transition:.45s var(--ease);
+}
+.faq-item.open .faq-q i{transform:rotate(180deg);background:rgba(34,211,238,.3);}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .5s var(--ease),padding .5s var(--ease);
+  padding:0 20px;
+}
+.faq-item.open .faq-a{max-height:240px;padding:0 20px 18px;}
+.faq-a p{margin:0;font-size:.85rem;line-height:1.7;color:var(--muted);font-weight:300;max-width:78ch;}
+
+/* ============ CONTACT / WHATSAPP FORM ============ */
+.contact-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(24px,3.4vw,48px);align-items:start;}
+.info-list{display:grid;gap:12px;}
+.info-item{
+  display:flex;gap:15px;align-items:flex-start;
+  padding:16px;border-radius:16px;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--stroke);
+  transition:.4s var(--ease);
+}
+.info-item:hover{border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.06);transform:translateX(5px);}
+.info-item .ico{margin:0;}
+.info-item h5{font-family:'Outfit',sans-serif;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;font-weight:500;}
+.info-item p{margin:0;font-size:.9rem;color:var(--ink);font-weight:400;}
+.info-item a{color:var(--ink);text-decoration:none;}
+.info-item a:hover{color:#67e8f9;}
+
+.form-card{
+  border-radius:24px;padding:28px;
+  background:var(--glass);border:1px solid var(--stroke);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  position:relative;overflow:hidden;
+}
+.form-card::before{
+  content:"";position:absolute;top:-100px;left:-70px;width:240px;height:240px;
+  background:radial-gradient(circle,rgba(37,211,102,.18),transparent 70%);
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;position:relative;}
+.field{position:relative;}
+.field.full{grid-column:1/-1;}
+.field input,.field textarea,.field select{
+  width:100%;padding:14px 16px;border-radius:14px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--stroke);
+  color:var(--ink);font-family:inherit;font-size:.88rem;
+  outline:none;transition:.35s var(--ease);resize:none;
+}
+.field select{appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,#67e8f9 50%),linear-gradient(135deg,#67e8f9 50%,transparent 50%);
+  background-position:calc(100% - 20px) center,calc(100% - 15px) center;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+}
+.field select option{background:#0b1220;color:var(--ink);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(142,163,192,.72);}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:rgba(34,211,238,.62);
+  background:rgba(34,211,238,.055);
+  box-shadow:0 0 0 4px rgba(34,211,238,.09);
+}
+.field.error input,.field.error textarea{
+  border-color:rgba(248,113,113,.75);
+  box-shadow:0 0 0 4px rgba(248,113,113,.12);
+}
+.submit{
+  width:100%;margin-top:6px;padding:15px 24px;border:0;border-radius:14px;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;
+  color:#04140a;
+  background:linear-gradient(120deg,#4ade80,#25d366 45%,#128c7e);
+  box-shadow:0 18px 40px -18px rgba(37,211,102,.95);
+  transition:.4s var(--ease);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.submit:hover{transform:translateY(-3px);box-shadow:0 26px 54px -20px rgba(37,211,102,1);filter:brightness(1.05);}
+.submit:active{transform:translateY(0);}
+.submit:disabled{cursor:wait;opacity:.85;transform:none;}
+
+/* ============ CLOSING ============ */
+.closing{align-items:center;text-align:center;}
+.closing .wrap{display:flex;flex-direction:column;align-items:center;}
+.closing .logo-hero{margin-bottom:30px;}
+.closing .h1{max-width:20ch;}
+.closing .chip-row{justify-content:center;margin-top:30px;}
+.closing .btn-wa{
+  margin-top:30px;display:inline-flex;align-items:center;gap:11px;
+  padding:16px 34px;border-radius:100px;text-decoration:none;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.03em;
+  color:#04140a;
+  background:linear-gradient(120deg,#4ade80,#25d366 45%,#128c7e);
+  box-shadow:0 22px 50px -20px rgba(37,211,102,1);
+  transition:.4s var(--ease);
+}
+.closing .btn-wa:hover{transform:translateY(-3px) scale(1.02);}
+
+/* ============ FLOATING WHATSAPP ============ */
+.wa-float{
+  position:fixed;bottom:26px;left:26px;z-index:58;
+  width:54px;height:54px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  color:#fff;font-size:1.45rem;text-decoration:none;
+  box-shadow:0 14px 34px -10px rgba(37,211,102,.85),0 0 0 1px rgba(255,255,255,.12);
+  transition:transform .35s var(--ease);
+}
+.wa-float::after{
+  content:"";position:absolute;inset:-6px;border-radius:50%;
+  border:2px solid rgba(37,211,102,.45);animation:waPulse 2.2s ease-out infinite;
+}
+@keyframes waPulse{0%{transform:scale(.9);opacity:.8;}100%{transform:scale(1.35);opacity:0;}}
+.wa-float:hover{transform:translateY(-4px) scale(1.07);}
+
+/* ============ TOAST ============ */
+.toast{
+  position:fixed;bottom:32px;left:50%;transform:translate(-50%,140%);
+  z-index:99;padding:14px 26px;border-radius:100px;
+  background:linear-gradient(120deg,rgba(34,211,238,.2),rgba(99,102,241,.2));
+  border:1px solid rgba(34,211,238,.45);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  font-size:.85rem;color:#e0f7ff;
+  box-shadow:0 24px 60px -24px rgba(34,211,238,.9);
+  transition:transform .6s var(--ease),opacity .6s;
+  opacity:0;display:flex;align-items:center;gap:10px;
+  max-width:min(90vw,520px);
+}
+.toast.show{transform:translate(-50%,0);opacity:1;}
+.toast.error{
+  background:linear-gradient(120deg,rgba(248,113,113,.2),rgba(220,38,38,.2));
+  border-color:rgba(248,113,113,.5);
+  box-shadow:0 24px 60px -24px rgba(248,113,113,.9);
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1024px){
+  .col-2{grid-template-columns:1fr;gap:26px;}
+  .grid-3{grid-template-columns:repeat(2,1fr);}
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .contact-grid{grid-template-columns:1fr;}
+}
+@media (max-width:760px){
+  .slide{padding:86px 20px 96px;overflow-y:auto;justify-content:flex-start;}
+  .grid-3,.grid-2,.grid-4,.form-row,.stat-grid{grid-template-columns:1fr;}
+  .dots{display:none;}
+  .brand-name{display:none;}
+  .cover-ring{display:none;}
+  .h1{font-size:2.1rem;}
+  .h2{font-size:1.5rem;}
+  .scroll-hint{display:none;}
+  .wa-float{bottom:auto;top:80px;left:16px;width:46px;height:46px;font-size:1.2rem;}
+}
+@media (max-height:720px) and (min-width:761px){
+  .slide{padding:80px clamp(24px,5vw,96px) 74px;}
+  .s-head{margin-bottom:20px;}
+  .card{padding:18px;}
+  .ico{width:38px;height:38px;font-size:.9rem;margin-bottom:11px;}
+  .logo-hero{width:130px;height:78px;margin-bottom:22px;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<div class="fx">
+  <div class="grid-lines"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+  <div class="vignette"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress"><div class="bar" id="bar"></div></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-chip">
+      <img src="https://v5thermosystems.com/media/site/images/logo-2.png" alt="V5 Thermosystems"
+           onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800;font-size:13px\'>V5</b>'">
+    </span>
+    <span class="brand-name">V5 <b>Thermosystems</b></span>
+  </div>
+  <div class="counter"><span id="cur">01</span><i>/</i><span id="total">15</span></div>
+</header>
+
+<!-- DOTS -->
+<nav class="dots" id="dots"></nav>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="btn" id="prev" aria-label="Previous slide"><i class="fa-solid fa-arrow-left"></i></button>
+  <button class="btn" id="next" aria-label="Next slide"><i class="fa-solid fa-arrow-right"></i></button>
+  <button class="btn" id="full" aria-label="Fullscreen"><i class="fa-solid fa-expand"></i></button>
+</div>
+
+<!-- FLOATING WHATSAPP -->
+<a class="wa-float"
+   href="https://wa.me/917219003440?text=Hi%20V5%20Thermosystems%2C%20I%27d%20like%20to%20enquire%20about%20your%20HVAC%20and%20refrigeration%20solutions."
+   target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<!-- DECK -->
+<main class="deck" id="deck">
+
+  <!-- ============ 01 · COVER ============ -->
+  <section class="slide cover active">
+    <div class="cover-ring"></div>
+    <div class="cover-ring two"></div>
+    <div class="wrap">
+      <div class="logo-hero reveal" style="--d:.05s">
+        <img src="https://v5thermosystems.com/media/site/images/logo-2.png" alt="V5 Thermosystems"
+             onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em\'>V5 THERMOSYSTEMS</b>'">
+      </div>
+      <p class="eyebrow reveal" style="--d:.14s">HVAC &amp; Refrigeration Solutions</p>
+      <h1 class="h1 reveal" style="--d:.22s">V5 <span class="grad">Thermosystems</span></h1>
+      <p class="lead reveal" style="--d:.32s">
+        Reliable supply, installation, repair, servicing and Annual Maintenance Contract solutions
+        for industrial, commercial and residential applications.
+      </p>
+      <div class="chip-row reveal" style="--d:.42s">
+        <span class="chip"><i class="fa-solid fa-location-dot"></i> Pune, Maharashtra, India</span>
+        <span class="chip"><i class="fa-solid fa-phone"></i> +91 7219003440</span>
+        <span class="chip"><i class="fa-solid fa-envelope"></i> sales@v5thermosystems.com</span>
+      </div>
+    </div>
+    <div class="scroll-hint">Scroll / Arrow Keys <span></span></div>
+  </section>
+
+  <!-- ============ 02 · ABOUT ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="col-2">
+        <div>
+          <div class="s-head reveal" style="--d:.05s">
+            <p class="eyebrow">About Our Company</p>
+            <h2 class="h2">Engineering <span class="grad">Comfort</span>,<br>Delivering Reliability</h2>
+          </div>
+          <p class="lead reveal" style="--d:.16s;margin-bottom:18px;">
+            V5 Thermosystems is a customer-focused organization specializing in HVAC and refrigeration
+            solutions. We combine technical expertise, quality products and dependable support to deliver
+            complete HVAC and refrigeration solutions.
+          </p>
+          <p class="lead reveal" style="--d:.24s;">
+            Our commitment is to deliver high-quality, efficient and dependable air-conditioning and
+            refrigeration solutions while building long-term, sustainable and mutually beneficial
+            relationships with our clients and suppliers.
+          </p>
+          <div class="chip-row reveal" style="--d:.34s;margin-top:26px;">
+            <span class="chip"><i class="fa-solid fa-circle-check"></i> Quality Solutions</span>
+            <span class="chip"><i class="fa-solid fa-circle-check"></i> Professional Service</span>
+            <span class="chip"><i class="fa-solid fa-circle-check"></i> Dependable Support</span>
+          </div>
+        </div>
+
+        <div class="glass-panel reveal" style="--d:.28s">
+          <div class="panel-top">
+            <span class="brand-chip" style="padding:7px 12px;">
+              <img src="https://v5thermosystems.com/media/site/images/logo-2.png" alt="V5"
+                   onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800\'>V5</b>'">
+            </span>
+            <div>
+              <h4>V5 Thermosystems</h4>
+              <p>Pune, Maharashtra, India</p>
+            </div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><b>2025</b><span>Established</span></div>
+            <div class="stat"><b>03</b><span>Sectors Served</span></div>
+            <div class="stat"><b>05</b><span>Core Services</span></div>
+            <div class="stat"><b>09</b><span>Product Categories</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 · OUR SERVICES ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="s-head reveal" style="--d:.05s">
+        <p class="eyebrow">Our Services</p>
+        <h2 class="h2">End-to-End <span class="grad">HVAC &amp; Refrigeration</span> Support</h2>
+        <p class="lead">From supply and installation to repair, servicing and Annual Maintenance
+        Contracts — we cover the complete lifecycle of your systems.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card reveal" style="--d:.14s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-truck-fast"></i></div>
+          <h3 class="h3">Supply</h3>
+          <p class="small">Reliable supply of quality HVAC and refrigeration equipment for every application.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.2s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <h3 class="h3">Installation</h3>
+          <p class="small">Professional installation services for air-conditioning, HVAC and refrigeration systems.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.26s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-wrench"></i></div>
+          <h3 class="h3">Repair</h3>
+          <p class="small">Efficient repair support that restores performance and extends equipment life.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.32s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-gauge-high"></i></div>
+          <h3 class="h3">Servicing</h3>
+          <p class="small">Regular servicing that keeps your systems efficient, dependable and energy smart.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.38s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-file-shield"></i></div>
+          <h3 class="h3">Annual Maintenance Contract</h3>
+          <p class="small">Planned AMC solutions for year-round reliability, uptime and peace of mind.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.44s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-headset"></i></div>
+          <h3 class="h3">Customer-Focused Support</h3>
+          <p class="small">Solutions for industrial, commercial and residential applications — backed by responsive support.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 · PRODUCTS — CORE SYSTEMS ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="s-head reveal" style="--d:.05s">
+        <p class="eyebrow">Our Products · 1 of 3</p>
+        <h2 class="h2">Core <span class="grad">HVAC &amp; Refrigeration</span> Systems</h2>
+        <p class="lead">Complete systems built for efficient heating, ventilation, air conditioning and refrigeration.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card reveal" style="--d:.14s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-fan"></i></div>
+          <h3 class="h3">HVAC Systems</h3>
+          <p class="small" style="margin-bottom:14px;">Complete HVAC systems for efficient heating, ventilation and air conditioning.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20HVAC%20Systems." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <article class="card reveal" style="--d:.2s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-snowflake"></i></div>
+          <h3 class="h3">Air Conditioning Systems</h3>
+          <p class="small" style="margin-bottom:14px;">Commercial and industrial air conditioning solutions.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Air%20Conditioning%20Systems." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <article class="card reveal" style="--d:.26s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-temperature-arrow-down"></i></div>
+          <h3 class="h3">Refrigeration Systems</h3>
+          <p class="small" style="margin-bottom:14px;">Reliable refrigeration systems for diverse applications.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Refrigeration%20Systems." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 · PRODUCTS — EQUIPMENT ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="s-head reveal" style="--d:.05s">
+        <p class="eyebrow">Our Products · 2 of 3</p>
+        <h2 class="h2">Equipment &amp; <span class="grad">Commercial Refrigeration</span></h2>
+        <p class="lead">Quality equipment, cooling components and commercial refrigeration systems with maintenance support.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card reveal" style="--d:.14s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-gears"></i></div>
+          <h3 class="h3">HVAC Equipment</h3>
+          <p class="small" style="margin-bottom:14px;">Quality HVAC equipment, components and installations.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20HVAC%20Equipment." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <article class="card reveal" style="--d:.2s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-wind"></i></div>
+          <h3 class="h3">Cooling Equipment</h3>
+          <p class="small" style="margin-bottom:14px;">Energy-efficient cooling equipment and service support.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Cooling%20Equipment." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <article class="card reveal" style="--d:.26s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-store"></i></div>
+          <h3 class="h3">Commercial Refrigeration</h3>
+          <p class="small" style="margin-bottom:14px;">Commercial refrigeration systems and maintenance.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Commercial%20Refrigeration." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 · PRODUCTS — ADVANCED ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="s-head reveal" style="--d:.05s">
+        <p class="eyebrow">Our Products · 3 of 3</p>
+        <h2 class="h2">Advanced &amp; <span class="grad">Industrial Solutions</span></h2>
+        <p class="lead">Air handling, turnkey MEPL HVAC projects and robust industrial-grade HVAC solutions.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card reveal" style="--d:.14s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-arrows-to-dot"></i></div>
+          <h3 class="h3">Air Handling Solutions</h3>
+          <p class="small" style="margin-bottom:14px;">Air handling and ventilation solutions for healthy environments.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Air%20Handling%20Solutions." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <article class="card reveal" style="--d:.2s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-diagram-project"></i></div>
+          <h3 class="h3">MEPL HVAC Solutions</h3>
+          <p class="small" style="margin-bottom:14px;">Turnkey MEPL and HVAC project execution.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20MEPL%20HVAC%20Solutions." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+
+        <article class="card reveal" style="--d:.26s">
+          <div class="card-glow"></div>
+          <div class="ico sm"><i class="fa-solid fa-industry"></i></div>
+          <h3 class="h3">Industrial HVAC Solutions</h3>
+          <p class="small" style="margin-bottom:14px;">Robust HVAC solutions for industrial facilities.</p>
+          <a class="link" href="https://wa.me/917219003440?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Industrial%20HVAC%20Solutions." target="_blank" rel="noopener">Enquire Now <i class="fa-solid fa-arrow-right"></i></a>
+        </article>
+      </div>
+
+      <p class="small reveal" style="--d:.36s;margin-top:26px;text-align:center;">
+        Serving Pune · Maharashtra · Delhi NCR · Bangalore · India
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 07 · WHY CHOOSE US ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="col-2">
+        <div>
+          <div class="s-head reveal" style="--d:.05s">
+            <p class="eyebrow">Why Choose Us</p>
+            <h2 class="h2">Reliable Service,<br><span class="grad">Better Solutions</span></h2>
+            <p class="lead">We focus on delivering dependable HVAC and refrigeration solutions with
+            professional service and attention to customer requirements.</p>
+          </div>
+
+          <ul class="checks">
+            <li class="reveal" style="--d:.18s"><i class="fa-solid fa-check"></i> Quality HVAC &amp; refrigeration solutions</li>
+            <li class="reveal" style="--d:.23s"><i class="fa-solid fa-check"></i> Professional installation services</li>
+            <li class="reveal" style="--d:.28s"><i class="fa-solid fa-check"></i> Reliable repair and maintenance support</li>
+            <li class="reveal" style="--d:.33s"><i class="fa-solid fa-check"></i> Annual Maintenance Contract services</li>
+            <li class="reveal" style="--d:.38s"><i class="fa-solid fa-check"></i> Solutions for industrial, commercial &amp; residential applications</li>
+            <li class="reveal" style="--d:.43s"><i class="fa-solid fa-check"></i> Customer-focused approach</li>
+          </ul>
+        </div>
+
+        <div class="feature reveal" style="--d:.3s">
+          <p class="eyebrow" style="margin-bottom:14px;">Our Promise</p>
+          <p class="quote">
+            From installation and supply to repair, maintenance and AMC services,
+            <b>V5 Thermosystems</b> is committed to dependable HVAC solutions.
+          </p>
+          <div class="chip-row">
+            <span class="chip"><i class="fa-solid fa-star"></i> Quality</span>
+            <span class="chip"><i class="fa-solid fa-shield-halved"></i> Reliability</span>
+            <span class="chip"><i class="fa-solid fa-bolt"></i> Efficiency</span>
+            <span class="chip"><i class="fa-solid fa-handshake"></i> Trust</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 08 · MISSION ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="col-2">
+        <div class="feature reveal" style="--d:.05s">
+          <div class="ico" style="width:56px;height:56px;font-size:1.3rem;border-radius:18px;">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <p class="eyebrow" style="margin-top:12px;">Our Mission</p>
+          <p class="quote" style="font-size:clamp(1.15rem,1.9vw,1.65rem);">
+            To provide <b>reliable and efficient</b> HVAC and refrigeration solutions that meet the
+            requirements of our customers.
+          </p>
+        </div>
+
+        <div class="reveal" style="--d:.2s">
+          <p class="eyebrow">Committed To</p>
+          <h2 class="h2">Solutions That <span class="grad">Perform</span></h2>
+          <ul class="checks">
+            <li><i class="fa-solid fa-check"></i> Reliable and efficient HVAC solutions</li>
+            <li><i class="fa-solid fa-check"></i> Meeting customer requirements</li>
+            <li><i class="fa-solid fa-check"></i> Refrigeration systems for diverse applications</li>
+            <li><i class="fa-solid fa-check"></i> Serving industrial, commercial &amp; residential needs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 09 · VISION ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="col-2">
+        <div class="reveal" style="--d:.05s">
+          <p class="eyebrow">Our Vision</p>
+          <h2 class="h2">Long-Term <span class="grad">Relationships</span></h2>
+          <p class="lead" style="margin-bottom:18px;">
+            To build long-term relationships through dependable service, quality solutions and
+            customer-focused support.
+          </p>
+          <div class="chip-row">
+            <span class="chip"><i class="fa-solid fa-handshake"></i> Mutually Beneficial</span>
+            <span class="chip"><i class="fa-solid fa-seedling"></i> Sustainable</span>
+            <span class="chip"><i class="fa-solid fa-infinity"></i> Long-Term</span>
+          </div>
+        </div>
+
+        <div class="feature reveal" style="--d:.2s">
+          <div class="ico" style="width:56px;height:56px;font-size:1.3rem;border-radius:18px;">
+            <i class="fa-solid fa-eye"></i>
+          </div>
+          <p class="eyebrow" style="margin-top:12px;">Looking Ahead</p>
+          <p class="quote" style="font-size:clamp(1.1rem,1.6vw,1.4rem);">
+            Building <b>sustainable, long-term relationships</b> with our clients and suppliers —
+            backed by dependable service and quality solutions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10 · VALUES ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="s-head reveal" style="--d:.05s">
+        <p class="eyebrow">Our Values</p>
+        <h2 class="h2">What We <span class="grad">Stand For</span></h2>
+        <p class="lead">Quality, reliability, efficiency and customer satisfaction are at the heart of our approach.</p>
+      </div>
+
+      <div class="grid-4">
+        <article class="card reveal" style="--d:.14s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-star"></i></div>
+          <h3 class="h3">Quality</h3>
+          <p class="small">Quality products and dependable solutions in everything we deliver.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.2s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3 class="h3">Reliability</h3>
+          <p class="small">Consistent, trustworthy service you can count on — every time.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.26s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-bolt"></i></div>
+          <h3 class="h3">Efficiency</h3>
+          <p class="small">Efficient systems and swift support that keep you running.</p>
+        </article>
+
+        <article class="card reveal" style="--d:.32s">
+          <div class="card-glow"></div>
+          <div class="ico"><i class="fa-solid fa-face-smile"></i></div>
+          <h3 class="h3">Customer Satisfaction</h3>
+          <p class="small">A customer-focused approach that puts your needs first.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11 · INDUSTRIAL ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="col-2">
+        <div class="reveal" style="--d:.05s">
+          <p class="eyebrow">Applications · 01</p>
+          <h2 class="h2">Industrial <span class="grad">Solutions</span></h2>
+          <p class="lead" style="margin-bottom:20px;">
+            Robust HVAC and refrigeration solutions engineered for demanding industrial facilities —
+            including turnkey MEPL and HVAC project execution.
+          </p>
+          <div class="tag-row">
+            <span class="tag">Industrial HVAC</span>
+            <span class="tag">MEPL Projects</span>
+            <span class="tag">Air Handling</span>
+            <span class="tag">HVAC Equipment</span>
+            <span class="tag">AMC</span>
+          </div>
+        </div>
+
+        <div class="glass-panel reveal" style="--d:.2s">
+          <div class="panel-top">
+            <div class="ico" style="margin:0"><i class="fa-solid fa-industry"></i></div>
+            <div>
+              <h4>Industrial Facilities</h4>
+              <p>Complete lifecycle support</p>
+            </div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><b>Supply</b><span>Equipment &amp; components</span></div>
+            <div class="stat"><b>Install</b><span>Professional execution</span></div>
+            <div class="stat"><b>Service</b><span>Repair &amp; maintenance</span></div>
+            <div class="stat"><b>AMC</b><span>Year-round reliability</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12 · COMMERCIAL ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="col-2">
+        <div class="glass-panel reveal" style="--d:.05s">
+          <div class="panel-top">
+            <div class="ico" style="margin:0"><i class="fa-solid fa-building"></i></div>
+            <div>
+              <h4>Commercial Establishments</h4>
+              <p>Comfort &amp; refrigeration</p>
+            </div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><b>AC</b><span>Air Conditioning</span></div>
+            <div class="stat"><b>Ref</b><span>Commercial Refrigeration</span></div>
+            <div class="stat"><b>HVAC</b><span>Complete systems</span></div>
+            <div class="stat"><b>AMC</b><span>Maintenance contracts</span></div>
+          </div>
+        </div>
+
+        <div class="reveal" style="--d:.2s">
+          <p class="eyebrow">Applications · 02</p>
+          <h2 class="h2">Commercial <span class="grad">Solutions</span></h2>
+          <p class="lead" style="margin-bottom:20px;">
+            Dependable comfort cooling and commercial refrigeration for offices, retail, hospitality
+            and business establishments.
+          </p>
+          <div class="tag-row">
+            <span class="tag">Air Conditioning Systems</span>
+            <span class="tag">Commercial Refrigeration</span>
+            <span class="tag">Cooling Equipment</span>
+            <span class="tag">HVAC Systems</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13 · RESIDENTIAL ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="col-2">
+        <div class="reveal" style="--d:.05s">
+          <p class="eyebrow">Applications · 03</p>
+          <h2 class="h2">Residential <span class="grad">Solutions</span></h2>
+          <p class="lead" style="margin-bottom:20px;">
+            Efficient air-conditioning and cooling solutions for homes — delivered with reliable
+            installation and dependable service support.
+          </p>
+          <div class="tag-row">
+            <span class="tag">Air Conditioning</span>
+            <span class="tag">Cooling Equipment</span>
+            <span class="tag">Installation</span>
+            <span class="tag">Repair &amp; Servicing</span>
+          </div>
+        </div>
+
+        <div class="feature reveal" style="--d:.2s">
+          <div class="ico" style="width:56px;height:56px;font-size:1.3rem;border-radius:18px;">
+            <i class="fa-solid fa-house-chimney"></i>
+          </div>
+          <p class="eyebrow" style="margin-top:12px;">For Your Home</p>
+          <p class="quote" style="font-size:clamp(1.05rem,1.55vw,1.35rem);">
+            Quality <b>air-conditioning</b> and <b>cooling solutions</b> — installed and serviced by
+            the V5 Thermosystems team.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14 · FAQ ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="s-head reveal" style="--d:.05s">
+        <p class="eyebrow">Some FAQ's</p>
+        <h2 class="h2">Questions, <span class="grad">Answered</span></h2>
+      </div>
+
+      <div class="faq">
+        <div class="faq-item reveal" style="--d:.12s">
+          <button class="faq-q" type="button">What services does V5 Thermosystems provide? <i class="fa-solid fa-chevron-down"></i></button>
+          <div class="faq-a"><p>We provide reliable supply, installation, repair, servicing and Annual
+          Maintenance Contract (AMC) solutions for HVAC and refrigeration systems across industrial,
+          commercial and residential applications.</p></div>
+        </div>
+
+        <div class="faq-item reveal" style="--d:.18s">
+          <button class="faq-q" type="button">What type of HVAC solutions do you offer? <i class="fa-solid fa-chevron-down"></i></button>
+          <div class="faq-a"><p>Our range covers HVAC systems, air conditioning systems, refrigeration
+          systems, HVAC equipment, cooling equipment and commercial refrigeration — along with air
+          handling, MEPL and industrial HVAC solutions.</p></div>
+        </div>
+
+        <div class="faq-item reveal" style="--d:.24s">
+          <button class="faq-q" type="button">Do you provide HVAC installation services? <i class="fa-solid fa-chevron-down"></i></button>
+          <div class="faq-a"><p>Yes. V5 Thermosystems provides professional installation services for
+          air-conditioning, HVAC and refrigeration systems.</p></div>
+        </div>
+
+        <div class="faq-item reveal" style="--d:.3s">
+          <button class="faq-q" type="button">Do you provide repair and maintenance services? <i class="fa-solid fa-chevron-down"></i></button>
+          <div class="faq-a"><p>Yes. We offer repair, servicing and Annual Maintenance Contract (AMC)
+          support to keep your HVAC and refrigeration systems efficient and dependable.</p></div>
+        </div>
+
+        <div class="faq-item reveal" style="--d:.36s">
+          <button class="faq-q" type="button">Why choose V5 Thermosystems? <i class="fa-solid fa-chevron-down"></i></button>
+          <div class="faq-a"><p>Because of our quality solutions, professional service, reliable support
+          and customer-focused approach — backed by a commitment to long-term, mutually beneficial
+          relationships.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 15 · CONTACT + WHATSAPP FORM ============ -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="s-head reveal" style="--d:.05s">
+        <p class="eyebrow">Contact Us</p>
+        <h2 class="h2">Let's Talk About <span class="grad">Your Project</span></h2>
+        <p class="lead">Tell us what you need and our team will contact you with the right solution.</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="info-list">
+          <div class="info-item reveal" style="--d:.14s">
+            <div class="ico sm" style="margin:0"><i class="fa-solid fa-location-dot"></i></div>
+            <div><h5>Location</h5><p>Pune, Maharashtra, India</p></div>
+          </div>
+          <div class="info-item reveal" style="--d:.2s">
+            <div class="ico sm" style="margin:0"><i class="fa-solid fa-phone"></i></div>
+            <div><h5>Phone</h5><p><a href="tel:+917219003440">+91 7219003440</a></p></div>
+          </div>
+          <div class="info-item reveal" style="--d:.26s">
+            <div class="ico sm" style="margin:0"><i class="fa-solid fa-envelope"></i></div>
+            <div><h5>Email</h5><p><a href="mailto:sales@v5thermosystems.com">sales@v5thermosystems.com</a></p></div>
+          </div>
+          <div class="info-item reveal" style="--d:.32s">
+            <div class="ico sm" style="margin:0"><i class="fa-regular fa-clock"></i></div>
+            <div><h5>Working Hours</h5><p>Monday – Saturday: 9:00 AM – 6:00 PM</p></div>
+          </div>
+        </div>
+
+        <div class="form-card reveal" style="--d:.24s">
+          <h3 class="h3" style="margin-bottom:6px;">Send Enquiry on WhatsApp</h3>
+          <p class="small" style="margin:0 0 20px;">
+            Fill in your details — WhatsApp opens with your message ready to send.
+          </p>
+
+          <form id="waForm" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <input type="text" id="wa-name" name="name" placeholder="Your Name *" autocomplete="name" required>
+              </div>
+              <div class="field">
+                <input type="tel" id="wa-phone" name="phone" placeholder="Phone Number *" autocomplete="tel" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field full">
+                <input type="email" id="wa-email" name="email" placeholder="Email Address (optional)" autocomplete="email">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field full">
+                <select id="wa-service" name="service">
+                  <option value="">Select a Service (optional)</option>
+                  <option>HVAC Systems</option>
+                  <option>Air Conditioning Systems</option>
+                  <option>Refrigeration Systems</option>
+                  <option>HVAC Equipment</option>
+                  <option>Cooling Equipment</option>
+                  <option>Commercial Refrigeration</option>
+                  <option>Air Handling Solutions</option>
+                  <option>MEPL HVAC Solutions</option>
+                  <option>Industrial HVAC Solutions</option>
+                  <option>Annual Maintenance Contract (AMC)</option>
+                  <option>Repair &amp; Servicing</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field full">
+                <textarea id="wa-msg" name="message" rows="4"
+                  placeholder="Tell us about your requirement... *" required></textarea>
+              </div>
+            </div>
+
+            <button class="submit" type="submit" id="waSubmit">
+              Send on WhatsApp <i class="fa-brands fa-whatsapp" style="font-size:1.05rem;"></i>
+            </button>
+
+            <p class="small" style="margin:14px 0 0;text-align:center;font-size:.74rem;">
+              Or call directly:
+              <a href="tel:+917219003440" style="color:#67e8f9;text-decoration:none;">+91 7219003440</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 16 · CLOSING ============ -->
+  <!-- NOTE: 16th section kept as decorative closing after 15 numbered slides -->
+  <section class="slide closing">
+    <div class="cover-ring"></div>
+    <div class="wrap">
+      <div class="logo-hero reveal" style="--d:.05s">
+        <img src="https://v5thermosystems.com/media/site/images/logo-2.png" alt="V5 Thermosystems"
+             onerror="this.style.display='none';this.parentNode.innerHTML='<b style=\'color:#0b1220;font-family:Outfit,sans-serif;font-weight:800;font-size:22px\'>V5 THERMOSYSTEMS</b>'">
+      </div>
+      <p class="eyebrow reveal" style="--d:.14s">Thank You</p>
+      <h1 class="h1 reveal" style="--d:.22s">Reliable HVAC &amp; <span class="grad">Refrigeration Solutions</span></h1>
+      <p class="lead reveal" style="--d:.32s">
+        V5 Thermosystems specializes in HVAC and refrigeration solutions, providing reliable supply,
+        installation, repair, servicing and AMC solutions for industrial, commercial and residential applications.
+      </p>
+      <a class="btn-wa reveal" style="--d:.42s"
+         href="https://wa.me/917219003440?text=Hi%20V5%20Thermosystems%2C%20I%27d%20like%20to%20enquire%20about%20your%20HVAC%20services."
+         target="_blank" rel="noopener">
+        <i class="fa-brands fa-whatsapp" style="font-size:1.15rem;"></i> Chat with us on WhatsApp
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> Ready.</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     DECK NAVIGATION
+     ============================================================ */
+  const slides  = Array.from(document.querySelectorAll('.slide'));
+  const total   = slides.length;
+  const dotsBox = document.getElementById('dots');
+  const curEl   = document.getElementById('cur');
+  const totalEl = document.getElementById('total');
+  const bar     = document.getElementById('bar');
+  const deck    = document.getElementById('deck');
+
+  let index  = 0;
+  let locked = false;
+
+  totalEl.textContent = String(total).padStart(2, '0');
+
+  const dots = slides.map((_, i) => {
+    const b = document.createElement('button');
+    b.className = 'dot';
+    b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    b.addEventListener('click', () => go(i));
+    dotsBox.appendChild(b);
+    return b;
+  });
+
+  function go(n) {
+    if (n < 0 || n > total - 1 || n === index) return;
+    index = n;
+
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+    dots.forEach((d, i) => d.classList.toggle('on', i === index));
+
+    curEl.textContent = String(index + 1).padStart(2, '0');
+    bar.style.width = ((index + 1) / total * 100) + '%';
+
+    /* close FAQ when leaving the FAQ slide */
+    if (index !== 13) {
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    }
+  }
+  function next() { go(Math.min(index + 1, total - 1)); }
+  function prev() { go(Math.max(index - 1, 0)); }
+
+  go(0);
+  bar.style.width = (1 / total * 100) + '%';
+
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+
+  const fullBtn = document.getElementById('full');
+  fullBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+      fullBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+    } else {
+      document.exitFullscreen?.();
+      fullBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    fullBtn.innerHTML = document.fullscreenElement
+      ? '<i class="fa-solid fa-compress"></i>'
+      : '<i class="fa-solid fa-expand"></i>';
+  });
+
+  document.addEventListener('keydown', e => {
+    /* don't hijack typing in form fields */
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'ArrowUp': case 'PageUp':
+        e.preventDefault(); prev(); break;
+      case 'Home': e.preventDefault(); go(0); break;
+      case 'End':  e.preventDefault(); go(total - 1); break;
+      case 'f': case 'F': fullBtn.click(); break;
+    }
+  });
+
+  deck.addEventListener('wheel', e => {
+    if (window.innerWidth < 761) return;
+    /* let users scroll inside the form area */
+    if (e.target.closest('.form-card')) return;
+    e.preventDefault();
+    if (locked) return;
+    locked = true;
+    setTimeout(() => { locked = false; }, 850);
+
+    if (e.deltaY > 24) next();
+    else if (e.deltaY < -24) prev();
+  }, { passive: false });
+
+  /* -------- touch swipe -------- */
+  let tStartX = 0, tStartY = 0;
+  deck.addEventListener('touchstart', e => {
+    tStartX = e.changedTouches[0].clientX;
+    tStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+  deck.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tStartX;
+    const dy = e.changedTouches[0].clientY - tStartY;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+      dx < 0 ? next() : prev();
+    }
+  }, { passive: true });
+
+  /* ============================================================
+     FAQ ACCORDION
+     ============================================================ */
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  /* ============================================================
+     WHATSAPP ENQUIRY FORM
+     ============================================================ */
+  const WA_NUMBER = '917219003440'; // country code + number, no +, no spaces
+
+  const waForm    = document.getElementById('waForm');
+  const waSubmit  = document.getElementById('waSubmit');
+  const waToast   = document.getElementById('toast');
+  const waBtnHTML = waSubmit.innerHTML;
+
+  function showToast(msg, ok = true) {
+    waToast.innerHTML =
+      `<i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${msg}`;
+    waToast.classList.toggle('error', !ok);
+    waToast.classList.add('show');
+    clearTimeout(waToast._t);
+    waToast._t = setTimeout(() => waToast.classList.remove('show'), 4200);
+  }
+
+  function fieldError(input, msg) {
+    const wrap = input.closest('.field') || input.parentElement;
+    wrap.classList.add('error');
+    if (msg) showToast(msg, false);
+    input.focus();
+  }
+
+  waForm.addEventListener('input', e => {
+    const wrap = e.target.closest('.field');
+    if (wrap) wrap.classList.remove('error');
+  });
+
+  waForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const nameEl    = document.getElementById('wa-name');
+    const phoneEl   = document.getElementById('wa-phone');
+    const emailEl   = document.getElementById('wa-email');
+    const serviceEl = document.getElementById('wa-service');
+    const msgEl     = document.getElementById('wa-msg');
+
+    const name    = nameEl.value.trim();
+    const phone   = phoneEl.value.trim();
+    const email   = emailEl.value.trim();
+    const service = serviceEl.value;
+    const message = msgEl.value.trim();
+
+    /* --- validation --- */
+    if (name.length < 2)
+      return fieldError(nameEl, 'Please enter your name.');
+    if (phone.replace(/\D/g, '').length < 10)
+      return fieldError(phoneEl, 'Please enter a valid 10-digit phone number.');
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
+      return fieldError(emailEl, 'Please check your email address.');
+    if (message.length < 5)
+      return fieldError(msgEl, 'Please describe your requirement.');
+
+    /* --- build WhatsApp message --- */
+    const lines = [
+      '*New Enquiry — V5 Thermosystems*',
+      '',
+      `*Name:* ${name}`,
+      `*Phone:* ${phone}`
+    ];
+    if (email)   lines.push(`*Email:* ${email}`);
+    if (service) lines.push(`*Service:* ${service}`);
+    lines.push('', '*Requirement:*', message);
+
+    const text = encodeURIComponent(lines.join('\n'));
+    const url  = `https://wa.me/${WA_NUMBER}?text=${text}`;
+
+    /* --- UX feedback --- */
+    waSubmit.disabled  = true;
+    waSubmit.innerHTML = 'Opening WhatsApp… <i class="fa-solid fa-spinner fa-spin"></i>';
+    showToast('Opening WhatsApp…');
+
+    /* --- open WhatsApp --- */
+    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+      window.location.href = url;
+    }
+
+    /* --- reset --- */
+    setTimeout(() => {
+      waSubmit.disabled  = false;
+      waSubmit.innerHTML = waBtnHTML;
+      showToast('WhatsApp opened — press Send to deliver your enquiry.');
+      waForm.reset();
+    }, 1400);
+  });
+
+})();
+</script>
+</body>
+</html>
